@@ -1,0 +1,76 @@
+def SpringVersion = '4.1.6.RELEASE'
+def JettyVersion = '9.3.0.M1'
+
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'eclipse'
+	
+	version = '1.0'
+	sourceCompatibility = 1.7
+	targetCompatibility = 1.7
+
+
+    [compileJava, compileTestJava]*.options*.encoding = "UTF-8"
+	
+	repositories {
+		maven { url "http://10.50.50.244:8081/nexus/content/groups/public/" }
+	    //mavenCentral()
+	}
+
+	configurations {
+		all*.exclude group: 'commons-logging', module: 'commons-logging'
+	}
+	
+	task copyLib(type: Sync, dependsOn: jar) {
+		from configurations.compile
+		from jar.archivePath
+		into 'build/deploy'
+	}
+	
+	task copyWebapp(type: Sync) {
+		from 'src/main/webapp'
+		into 'build/deploy/webapp'
+	}
+}
+project(':tony-core') {
+	jar.exclude 'logback-test.xml'
+	dependencies{
+	    compile fileTree( dir: "lib", include: '*.jar' )
+	    compile 'org.slf4j:slf4j-api:1.7.12'
+	    compile 'org.slf4j:jcl-over-slf4j:1.7.12'
+	    compile 'ch.qos.logback:logback-classic:1.1.3'
+		compile 'javax.mail:mail:1.5.0-b01'
+		compile 'net.logstash.logback:logstash-logback-encoder:4.2'
+		compile 'com.fasterxml.jackson.core:jackson-databind:2.6.0-rc3'
+		compile 'com.google.guava:guava:18.0'
+	    compile "org.springframework:spring-core:${SpringVersion}"
+	    compile "org.springframework:spring-jdbc:${SpringVersion}"
+		compile "org.springframework:spring-web:${SpringVersion}"
+		compile "org.springframework:spring-webmvc:${SpringVersion}"
+		compile "org.eclipse.jetty:jetty-server:${JettyVersion}"
+		compile "org.eclipse.jetty:jetty-webapp:${JettyVersion}"
+	    compile 'mysql:mysql-connector-java:5.1.35'
+		compile 'org.apache.commons:commons-lang3:3.1'
+		compile 'org.javassist:javassist:3.19.0-GA'
+		compile 'org.reflections:reflections:0.9.10'
+	    compile 'redis.clients:jedis:2.7.2'
+	    compile 'org.apache.httpcomponents:httpclient:4.4.1'
+	    compile 'org.apache.httpcomponents:httpcore-nio:4.4.1'
+	    compile 'commons-beanutils:commons-beanutils:1.8.3'
+	    compile 'joda-time:joda-time:2.8.1'
+	    compile 'com.alibaba:druid:1.0.14'
+    }
+}
+
+project(':tony-logic') {
+	dependencies{
+		compile project(':tony-core')
+		compile fileTree( dir: "lib", include: '*.jar' )
+		compile 'org.aspectj:aspectjrt:1.8.6'
+		compile 'org.aspectj:aspectjweaver:1.8.6'
+
+        testCompile 'junit:junit:4.11'
+	}
+	task deploy(dependsOn: [copyLib, copyWebapp])
+}
+
