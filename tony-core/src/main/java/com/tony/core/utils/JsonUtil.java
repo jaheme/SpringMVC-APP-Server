@@ -32,7 +32,7 @@ public abstract class JsonUtil {
 
 	private static final Logger log = LoggerFactory.getLogger(JsonUtil.class);
 
-	private static final ObjectMapper mapper = new ObjectMapper();
+	public static final ObjectMapper mapper = new ObjectMapper();
 	static {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 	}

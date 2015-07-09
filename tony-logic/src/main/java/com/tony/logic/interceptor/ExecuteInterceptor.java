@@ -31,7 +31,7 @@ public class ExecuteInterceptor extends HandlerInterceptorAdapter {
 			HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
 		long t = System.currentTimeMillis() - Long.valueOf(request.getAttribute(T_ATTRI).toString());
-		if (t > 50) {
+		if (t > 0) {
 			log.warn("{} used: {} ms", request.getRequestURI(), t);
 		}
 		request.removeAttribute(T_ATTRI);

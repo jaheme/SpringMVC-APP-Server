@@ -3,6 +3,7 @@ package com.tony.core.http;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import com.tony.core.status.BaseStatus;
@@ -69,9 +70,12 @@ public class JsonView {
 	public void write(HttpServletResponse resp) throws IOException {
 		resp.setContentType("application/json");
 		resp.setCharacterEncoding("UTF-8");
-		PrintWriter writer = resp.getWriter();
-		writer.write(JsonUtil.toStr(this));
-		writer.flush();
+		ServletOutputStream outputStream = resp.getOutputStream();
+		JsonUtil.mapper.writeValue(outputStream, this);
+		outputStream.flush();
+//		PrintWriter writer = resp.getWriter();
+//		writer.write(JsonUtil.toStr(this));
+//		writer.flush();
 //		writer.close();	// will automatically close the stream after the servlet is finished running as part of the servlet request life-cycle.
 	}
 	
