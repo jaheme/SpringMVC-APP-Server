@@ -14,11 +14,11 @@ import com.tony.core.status.IStatus;
  */
 public class ModelAndViewJson {
 	
-	private static MappingJackson2JsonView jsonView = new MappingJackson2JsonView();
 	private final static String CODE = "code";
 	private final static String MSG = "msg";
 	private final static String DATA = "data";
 
+	private static MappingJackson2JsonView jsonView = new MappingJackson2JsonView();
 	/** 只返回处理成功，不带数据体。 */
 	public static ModelAndView ok() {
 		ModelAndView json = new ModelAndView(jsonView);
