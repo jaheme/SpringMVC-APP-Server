@@ -1,11 +1,13 @@
 package com.tony.core.http;
 
 import java.io.File;
+import java.net.InetSocketAddress;
 import java.util.List;
 
 import org.apache.commons.lang3.Validate;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -13,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
+import com.tony.core.constant.EnvConf;
 
 public class JettyServer {
 	
@@ -50,19 +53,15 @@ public class JettyServer {
     public void start() {
         Validate.isTrue(port>0);
         
-        QueuedThreadPool threadPool = new QueuedThreadPool(1024, 32);
-        Server server = new Server(threadPool);
-        ServerConnector connector = new ServerConnector(server);
-
         String address = "0.0.0.0";
-        //临时屏蔽一下，因为外网还有一些配置是走127.0.0.1
-//        if(Env.isProd()) { //外网绑定内网IP
-//            address = ServerUtils.getHostAddress("10.1.16.");
-//            connector.setHost(address);
-//        }
-        connector.setPort(port);
-        server.addConnector(connector);
-
+        InetSocketAddress inetAddress = new InetSocketAddress(address, port);
+        Server server = new Server(inetAddress);
+//        QueuedThreadPool threadPool = new QueuedThreadPool(1024, 32);
+//        Server server = new Server(threadPool);
+//        ServerConnector connector = new ServerConnector(server);
+//        server.addConnector(connector);
+//
+//        connector.setPort(port);
         if(contextPath != null) {
             server.setHandler(new WebAppContext(getWebappPath(), contextPath));
         } else if(servletHandler != null) {
@@ -70,17 +69,14 @@ public class JettyServer {
         } else {
             Validate.isTrue(false);
         }
-
+        logger.info("used in production environment : {}", EnvConf.isProd());
         try {
             server.start();
             server.join();
         } catch (Exception e) {
-            e.printStackTrace(System.err);
-            logger.error("", e);
+            logger.error("jetty start error", e);
             System.exit(-1);
         }
-
-        logger.warn("jetty start at {}:{}", address, port);
     }
 
     private String getWebappPath() {

@@ -1,8 +1,6 @@
 package com.tony.logic.web;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -48,19 +46,6 @@ public class TestController {
 
 		return ModelAndViewJson.ok(t);
 	
-	}
-	
-
-	@RequestMapping("/t")
-	@ResponseBody
-	public Object login(String account, String pswd) {
-		testService.login(account, pswd);	// 参数可以先判断，直接使用。
-		Map<String, Object> result = new HashMap<>(5);
-		result.put("msgcode", 100);
-		result.put("message", 0);
-		result.put("result", "");
-		// ResponseBody注解会加入对象到JSON格式字符串的转换逻辑，不需要手动。
-		return result;	
 	}
 
 	@RequestMapping("/t")
